@@ -1,4 +1,4 @@
-from main import bot
+from GamebitBot.loader import bot
 from telebot.types import Message
 
 

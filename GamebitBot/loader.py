@@ -4,3 +4,4 @@ from telebot import StateMemoryStorage
 
 storage = StateMemoryStorage()
 bot = TeleBot(token=config.TOKEN, state_storage=storage)
+#bot = TeleBot(token=config.TOKEN)

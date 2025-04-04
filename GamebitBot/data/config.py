@@ -13,7 +13,4 @@ TOKEN = os.getenv("TOKEN")
 
 DEFAULT_COMMANDS = (
     ('start', 'Запуск бота'),
-    ('menu', 'Вывести меню'),
-    ('help', 'Вывести справку'),
-    ('hy', 'кака я то команда'),
 )

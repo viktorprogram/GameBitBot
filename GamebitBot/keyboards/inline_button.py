@@ -12,7 +12,7 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeybo
 
 def menu_button() -> ReplyKeyboardMarkup:
     """Кнопки с общей информацией"""
-    markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
     but_0 = KeyboardButton('Забронировать', )
     but_1 = KeyboardButton('⌨️🖥Характеристики', )
     but_2 = KeyboardButton('📫Локация', )
@@ -22,4 +22,11 @@ def menu_button() -> ReplyKeyboardMarkup:
     markup.add(but_0)
     markup.add(but_1,but_2,but_3,but_4, row_width=2)
     markup.add(but_5)
+    return markup
+
+def button_location() -> InlineKeyboardMarkup:
+    """Кнопка с ссылкой на карте с адресом"""
+    markup = InlineKeyboardMarkup()
+    but_1 = InlineKeyboardButton(text='Машрту', url='https://yandex.ru/maps/-/CHVVBOOh')
+    markup.add(but_1)
     return markup

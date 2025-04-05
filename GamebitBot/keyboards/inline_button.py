@@ -18,7 +18,7 @@ def menu_button() -> ReplyKeyboardMarkup:
     but_2 = KeyboardButton('📫Локация', )
     but_3 = KeyboardButton('🌇Интерьер', )
     but_4 = KeyboardButton('💰Прайс', )
-    but_5 = KeyboardButton('Правила клуба', )
+    but_5 = KeyboardButton('🚨Правила клуба', )
     markup.add(but_0)
     markup.add(but_1,but_2,but_3,but_4, row_width=2)
     markup.add(but_5)

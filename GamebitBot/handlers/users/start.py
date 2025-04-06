@@ -1,8 +1,10 @@
 import os
 from GamebitBot.loader import bot
-from telebot.types import Message, InputMediaPhoto
+from telebot.types import Message, InputMediaPhoto, CallbackQuery
 
-from keyboards.inline_button import menu_button, button_location
+from keyboards.inline_button import menu_button, button_location, visit_time_button, end_time_button, \
+    request_contact_button
+from states.state_user import UserStateInfo
 
 
 @bot.message_handler(commands=['start'])
@@ -64,4 +66,42 @@ def info_gamebit(message: Message):
         open_photo_path, photo = open_photo_to_message(name='rule')
         bot.send_media_group(chat_id=message.chat.id, media=photo)
         close_photo(open_photo_path)
+    elif text == 'Забронировать':
+        print(message.chat.id)
+        bot.set_state(message.from_user.id, UserStateInfo.visit_time, message.chat.id)
+        bot.send_message(chat_id=message.chat.id, reply_markup=visit_time_button(), text='Выберите время посещения клуба')
 
+
+@bot.callback_query_handler(func=lambda call: call.data.endswith('visit_time'))
+def visit_time_user(call: CallbackQuery):
+    """Обработка нажатия кнопки о времени посещения, и занося ее в информацию пользователя"""
+    with bot.retrieve_data(call.from_user.id, call.message.chat.id) as data:
+        data['visit_time'] = call.data[:5]
+    bot.edit_message_text(text=f'Вы выбрали время посещения {call.data[:5]} выберите до какого времени ',
+                          chat_id=call.message.chat.id,
+                          message_id=call.message.message_id, reply_markup=end_time_button()
+                          )
+
+@bot.callback_query_handler(func=lambda call: call.data.endswith('end_time'))
+def end_time_user(call: CallbackQuery):
+    """Обработка нажатия кнопки о времени прекращения посещения, и занося ее в информацию пользователя"""
+    with bot.retrieve_data(call.from_user.id, call.message.chat.id) as data:
+        data['end_time'] = call.data[:5]
+        visit_data = data.get('visit_time')
+    bot.edit_message_text(text=f'Вы выбрали время посещения {visit_data} \n '
+                               f'время убытия {call.data[:5]}',
+                          chat_id=call.message.chat.id,
+                          message_id=call.message.message_id)
+    bot.send_message(chat_id=call.message.chat.id,
+                     text='Отправьте нам пожалуйста номер телефоня, для связи с вами',
+                     reply_markup=request_contact_button())
+
+@bot.message_handler(content_types=['contact'])
+def phone(message: Message):
+    """Получение номера телефона и отправка сообщения о бронировании администратору"""
+    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        visit_time = data.get('visit_time')
+        end_time = data.get('end_time')
+    bot.send_message(chat_id='259061505', text=f'Пользователь {message.from_user.full_name} \n '
+                                               f'забронировал на время {visit_time} - {end_time} \n'
+                                               f'номер телефона - {message.contact.phone_number}')

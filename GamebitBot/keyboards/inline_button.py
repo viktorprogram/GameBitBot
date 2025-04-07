@@ -65,20 +65,26 @@ def time_list() -> List[str]:
 
 
 
-def visit_time_button() -> InlineKeyboardMarkup:
+def visit_time_button(name_time) -> InlineKeyboardMarkup:
     """Спсок кнопок для выбора время бронирования"""
     markup = InlineKeyboardMarkup()
-    new_list = [InlineKeyboardButton(text=time,callback_data=f'{time}_visit_time') for time in time_list()]
+    new_list = [InlineKeyboardButton(text=time,callback_data=f'{time}_{name_time}') for time in time_list()]
     markup.add(*new_list, row_width=4)
-
     return markup
 
-def end_time_button() -> InlineKeyboardMarkup:
-    """Спсок кнопок для выбора время бронирования"""
+def choosing_place_button() -> InlineKeyboardMarkup:
+    """Спсок кнопок для выбора компьютера"""
     markup = InlineKeyboardMarkup()
-    new_list = [InlineKeyboardButton(text=time,callback_data=f'{time}_end_time') for time in time_list()]
-    markup.add(*new_list, row_width=4)
-
+    but_0 = InlineKeyboardButton(text='Стандарт №1', callback_data='pk_st_1')
+    but_1 = InlineKeyboardButton(text='Стандарт №2', callback_data='pk_st_2')
+    but_2 = InlineKeyboardButton(text='Стандарт №3', callback_data='pk_st_3')
+    but_3 = InlineKeyboardButton(text='Стандарт №4', callback_data='pk_st_4')
+    but_4 = InlineKeyboardButton(text='Стандарт №5', callback_data='pk_st_5')
+    but_5 = InlineKeyboardButton(text='VIP №1', callback_data='pk_vip_1')
+    but_6 = InlineKeyboardButton(text='ViP №2', callback_data='pk_vip_2')
+    but_7 = InlineKeyboardButton(text='PS 5', callback_data='pk_ps')
+    markup.add(but_0, but_1, but_2, but_3, but_4, row_width=3)
+    markup.add( but_5, but_6, but_7, row_width=2)
     return markup
 
 def request_contact_button():

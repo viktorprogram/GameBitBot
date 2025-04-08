@@ -1,14 +1,16 @@
 import os
 from GamebitBot.loader import bot
-from telebot.types import Message, InputMediaPhoto, CallbackQuery
+from telebot.types import Message, InputMediaPhoto, CallbackQuery, ReplyKeyboardRemove
 from keyboards.inline_button import menu_button, button_location, visit_time_button, \
     request_contact_button, choosing_place_button
-from state.state_user import UserStateInfo
+from states.state_user import UserStateInfo
+from utils.notify_admins import info_pk_user
 
 
 @bot.message_handler(commands=['start'])
 def command_start(message: Message):
     """Обработка команды старт с выводом блока кнопок с общей информацией"""
+    bot.set_state(message.from_user.id, UserStateInfo.start, message.chat.id)
     bot.send_message(chat_id=message.chat.id,
                      text=f"<b>{message.from_user.full_name}</b> Добро пожаловать в <b>GameBitBot</b>",
                      parse_mode='html',
@@ -52,7 +54,7 @@ def info_gamebit(message: Message):
         bot.send_photo(chat_id=message.chat.id,
                        reply_markup=button_location(),
                        photo=photo_location,
-                       caption='Мы находимся по адресу <b>Cело Винсады, Подгорная улица, 156Г 2 этаж</b> ',
+                       caption='Мы находимся по адресу <b>с. Винсады, Подгорная улица, 156Г 2 этаж</b> ',
                        parse_mode='html')
         photo_location.close()
 
@@ -75,7 +77,6 @@ def visit_time_user(call: CallbackQuery):
     bot.set_state(user_id=call.from_user.id, chat_id=call.message.chat.id, state=UserStateInfo.visit_time)
     with bot.retrieve_data(user_id=call.from_user.id, chat_id=call.message.chat.id) as data:
         data['visit_time'] = call.data[:5]
-        print(data, call.from_user.id, call.message.chat.id)
     bot.edit_message_text(text=f'Вы выбрали время посещения {call.data[:5]} выберите до какого времени ',
                           chat_id=call.message.chat.id,
                           message_id=call.message.message_id, reply_markup=visit_time_button(name_time='end_time')
@@ -86,46 +87,45 @@ def end_time_user(call: CallbackQuery):
     """Обработка нажатия кнопки о времени прекращения посещения, и занося ее в информацию пользователя"""
     with bot.retrieve_data(call.from_user.id, call.message.chat.id) as data:
         data['end_time'] = call.data[:5]
-        visit_data = data.get('visit_time')
-        print(data, call.from_user.id, call.message.chat.id)
-    bot.edit_message_text(text=f'Вы выбрали время посещения {visit_data} \n '
-                               f'время убытия {call.data[:5]}',
-                          chat_id=call.message.chat.id,
-                          message_id=call.message.message_id)
-    bot.send_message(chat_id=call.message.chat.id,
-                     text='Выберите пожалуйста компьютер',
-                     reply_markup=choosing_place_button())
+    bot.edit_message_text(chat_id=call.message.chat.id,
+                          message_id=call.message.message_id,
+                          text='Выберите пожалуйста компьютер',
+                          reply_markup=choosing_place_button())
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('pk'))
 def choosing_place_user(call: CallbackQuery):
     """Получение выброннаго места для бронирования"""
     bot.set_state(user_id=call.from_user.id, chat_id=call.message.chat.id, state=UserStateInfo.name_state)
     with bot.retrieve_data(call.from_user.id, call.message.chat.id) as data:
-        data['choosing_place'] = call.data[2:]
+        data['choosing_place'] = call.data[3:]
     bot.edit_message_text(text='Напишите свое имя', chat_id=call.message.chat.id, message_id=call.message.message_id)
+    bot.register_next_step_handler(call.message, name_user)
 
 
-
-@bot.message_handler(content_types=["text"])
-def user(message: Message):
-    print(message.text)
-
-@bot.message_handler(state=UserStateInfo.start)
 def name_user(message: Message):
-
-    print(message.text)
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
         data['name_user'] = message.text
     bot.send_message(chat_id=message.chat.id,
-                    text='Отправьте нам пожалуйста номер телефона, для связи с вами, для этого нажмите кнопку снизу 👇',
+                    text='Для завершения бронирования, отправьте нам пожалуйста номер телефона, для связи с вами, для этого нажмите кнопку снизу 👇',
                     reply_markup=request_contact_button())
 
-# @bot.message_handler(content_types=['contact'])
-# def phone(message: Message):
-#     """Получение номера телефона и отправка сообщения о бронировании администратору"""
-#     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
-#         visit_time = data.get('visit_time')
-#         end_time = data.get('end_time')
-#     bot.send_message(chat_id='259061505', text=f'Пользователь {message.from_user.full_name} \n '
-#                                                f'забронировал на время {visit_time} - {end_time} \n'
-#                                                f'номер телефона - {message.contact.phone_number}')
+@bot.message_handler(content_types=['contact'])
+def phone(message: Message):
+    """Получение номера телефона и отправка сообщения о бронировании администратору"""
+    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        visit_time = data.get('visit_time')
+        end_time = data.get('end_time')
+        name = data.get('name_user')
+        choosing_place = data.get('choosing_place')
+        full_choosing_place = info_pk_user(choosing_place)
+    bot.send_message(chat_id='259061505', text=f'Пользователь - {name} \n'
+                                               f'Забронировал на время - {visit_time} - {end_time} \n'
+                                               f'Компьютер - {full_choosing_place} \n'
+                                               f'номер телефона - {message.contact.phone_number}')
+
+    bot.send_message(chat_id=message.chat.id, text=f'{name}, спасибо что забронировали  \n'
+                                               f'Компьютер - {full_choosing_place} \n'
+                                               f'на время - {visit_time} - {end_time} \n'
+                                               f'<b>Если вы не успели ко времени бронирования, бронь продержится 15 минут, '
+                                               f'после чего компьютер будет свободен</b>', parse_mode='html',
+                     reply_markup=ReplyKeyboardRemove())

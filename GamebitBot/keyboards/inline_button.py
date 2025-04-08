@@ -30,18 +30,19 @@ def menu_button() -> ReplyKeyboardMarkup:
 def button_location() -> InlineKeyboardMarkup:
     """Кнопка с ссылкой на карте с адресом"""
     markup = InlineKeyboardMarkup()
-    but_1 = InlineKeyboardButton(text='Машрту', url='https://yandex.ru/maps/-/CHVVBOOh')
+    but_1 = InlineKeyboardButton(text='Маршрут', url='https://yandex.ru/maps/-/CHVVBOOh')
     markup.add(but_1)
     return markup
 
 def time_list() -> List[str]:
-    """Функция создает список со временем на сутки, от текущей даты"""
+    """Функция создает список со временем """
     time_now = str(datetime.datetime.now().time().strftime(format='%H:%M'))
     list_time = []
 
-
-
-    if int(time_now[3:]) >= 30:
+    if 2 < int(time_now[:2]) < 12:
+        now_time = '12:00'
+        list_time.append(now_time)
+    elif int(time_now[3:]) >= 30:
         if int(time_now[:2]) == 23:
             now_time = '00:30'
             list_time.append(now_time)
@@ -56,14 +57,14 @@ def time_list() -> List[str]:
             now_time = str(int(time_now[:2]) + 1) + ':00'
             list_time.append(now_time)
 
+
     date_format = datetime.datetime.strptime(now_time, '%H:%M')
-    for h in range(49):
+    while int(date_format.time().strftime(format='%H:%M')[:2]) != 2:
         date_format += datetime.timedelta(minutes=30)
         list_time.append(date_format.time().strftime(format='%H:%M'))
-
     return list_time
 
-
+time_list()
 
 def visit_time_button(name_time) -> InlineKeyboardMarkup:
     """Спсок кнопок для выбора время бронирования"""

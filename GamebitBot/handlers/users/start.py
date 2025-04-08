@@ -1,10 +1,10 @@
 import os
 from GamebitBot.loader import bot
-from telebot.types import Message, InputMediaPhoto, CallbackQuery, ReplyKeyboardRemove
+from telebot.types import Message, CallbackQuery, ReplyKeyboardRemove
 from keyboards.inline_button import menu_button, button_location, visit_time_button, \
     request_contact_button, choosing_place_button
 from states.state_user import UserStateInfo
-from utils.notify_admins import info_pk_user
+from utils.utils_bot import info_pk_user, open_photo_to_message, close_photo
 
 
 @bot.message_handler(commands=['start'])
@@ -24,20 +24,7 @@ specifications_text = ('🖥 32" Монитор Samsung Odyssey G5 165Гц, из
           '💾 Kingston Внутренний SSD-диск KC3000 M.2 PCI-E 4.0 \n'
           '📸 ZOTAC Видеокарта GeForce RTX 4060 8 ГБ')
 
-
-def open_photo_to_message(name: str):
-    """Функция чтения изображения для отправки"""
-    open_photo = [open((f'{os.getcwd()}\\photo\\{name}\\{path}'), 'rb') for path in
-                          os.listdir(f'{os.getcwd()}\\photo\\{name}')]
-    media_photo = [InputMediaPhoto(i) for i in open_photo]
-    return open_photo, media_photo
-
-def close_photo(list_open_photo: list):
-    """Функция для закрытия фотографий"""
-    for interior in list_open_photo: interior.close()
-    return
-
-@bot.message_handler(func=lambda message:True)
+@bot.message_handler(state=UserStateInfo.start)
 def info_gamebit(message: Message):
     """Вывод информации о клубе"""
     text = message.text
@@ -99,33 +86,43 @@ def choosing_place_user(call: CallbackQuery):
     with bot.retrieve_data(call.from_user.id, call.message.chat.id) as data:
         data['choosing_place'] = call.data[3:]
     bot.edit_message_text(text='Напишите свое имя', chat_id=call.message.chat.id, message_id=call.message.message_id)
-    bot.register_next_step_handler(call.message, name_user)
+    # bot.register_next_step_handler(call.message, name_user)
 
-
+@bot.message_handler(state=UserStateInfo.name_state)
 def name_user(message: Message):
+    sent_message = bot.send_message(chat_id=message.chat.id,
+                                    text='Для завершения бронирования, отправьте нам пожалуйста номер телефона, для связи с вами, '
+                                         'для этого нажмите кнопку снизу 👇'
+                                         '(ваш номер телефона нигде не сохранятеся, он нужен только для связи с вами!)',
+                                    reply_markup=request_contact_button())
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
         data['name_user'] = message.text
-    bot.send_message(chat_id=message.chat.id,
-                    text='Для завершения бронирования, отправьте нам пожалуйста номер телефона, для связи с вами, для этого нажмите кнопку снизу 👇',
-                    reply_markup=request_contact_button())
+        data['sent_message_phone'] = sent_message
 
 @bot.message_handler(content_types=['contact'])
 def phone(message: Message):
     """Получение номера телефона и отправка сообщения о бронировании администратору"""
-    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
-        visit_time = data.get('visit_time')
-        end_time = data.get('end_time')
-        name = data.get('name_user')
-        choosing_place = data.get('choosing_place')
-        full_choosing_place = info_pk_user(choosing_place)
+    try:
+        with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+            visit_time = data.get('visit_time')
+            end_time = data.get('end_time')
+            name = data.get('name_user')
+            full_choosing_place = info_pk_user(data.get('choosing_place'))
+            sent_message = data.get('sent_message_phone')
+        bot.delete_message(chat_id=message.chat.id, message_id=sent_message.message_id)
+    except AttributeError:
+        pass
+    bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     bot.send_message(chat_id='259061505', text=f'Пользователь - {name} \n'
                                                f'Забронировал на время - {visit_time} - {end_time} \n'
                                                f'Компьютер - {full_choosing_place} \n'
                                                f'номер телефона - {message.contact.phone_number}')
-
     bot.send_message(chat_id=message.chat.id, text=f'{name}, спасибо что забронировали  \n'
-                                               f'Компьютер - {full_choosing_place} \n'
-                                               f'на время - {visit_time} - {end_time} \n'
-                                               f'<b>Если вы не успели ко времени бронирования, бронь продержится 15 минут, '
-                                               f'после чего компьютер будет свободен</b>', parse_mode='html',
-                     reply_markup=ReplyKeyboardRemove())
+                                                        f'Компьютер - {full_choosing_place} \n'
+                                                        f'на время - {visit_time} - {end_time} \n'
+                                                        f'<b>Если вы не успели ко времени бронирования, бронь продержится 15 минут, '
+                                                        f'после чего компьютер будет свободен</b>', parse_mode='html',
+                          reply_markup=ReplyKeyboardRemove())
+
+
+

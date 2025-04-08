@@ -1,8 +1,10 @@
-# pytelegrambotapi-template
+<h1 align="center">Telegram bot компьютерного клуба GameBitBot</h1>
 
-A good template for a telegram bot based on the PyTelegramBotApi library that looks nice and is convenient to use for your projects
-
-# Licence
-
-Licensed under GNU GPLv3.
-Copyright (c) CodWiz
+Данный бот, отправляет пользователю по предложенным запросам, информацию: 
+* Характеристики - текстовое сообщение;
+* Локация - фото, с ссылкой на яндекс карты;
+* Интерьер - фото;
+* Прайс - фото;
+* Правила клуба - фото;
+* Так же есть возможность бронирования компьютера, с выборов времени посещения и временем окончания, 
+и выбором самого компьютера. После чего эта информация отправляется администратору клуба.

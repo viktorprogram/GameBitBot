@@ -1,17 +1,5 @@
-import datetime
-from typing import List
-
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
-
-# def menu_button() -> InlineKeyboardMarkup:
-#     """Кнопки с общей информацией"""
-#     markup = InlineKeyboardMarkup()
-#     but_1 = InlineKeyboardButton('Характеристики', callback_data='specifications')
-#     but_2 = InlineKeyboardButton('Локация', callback_data='location')
-#     but_3 = InlineKeyboardButton('Интерьер', callback_data='interior')
-#     but_4 = InlineKeyboardButton('Прайс', callback_data='price')
-#     markup.add(but_1,but_2,but_3,but_4)
-#     return markup
+from utils.utils_bot import time_list
 
 def menu_button() -> ReplyKeyboardMarkup:
     """Кнопки с общей информацией"""
@@ -34,40 +22,9 @@ def button_location() -> InlineKeyboardMarkup:
     markup.add(but_1)
     return markup
 
-def time_list() -> List[str]:
-    """Функция создает список со временем """
-    time_now = str(datetime.datetime.now().time().strftime(format='%H:%M'))
-    list_time = []
-
-    if 2 < int(time_now[:2]) < 12:
-        now_time = '12:00'
-        list_time.append(now_time)
-    elif int(time_now[3:]) >= 30:
-        if int(time_now[:2]) == 23:
-            now_time = '00:30'
-            list_time.append(now_time)
-        else:
-            now_time = str(int(time_now[0:2]) + 1) + ':30'
-            list_time.append(now_time)
-    else:
-        if int(time_now[:2]) == 23:
-            now_time = '00:00'
-            list_time.append(now_time)
-        else:
-            now_time = str(int(time_now[:2]) + 1) + ':00'
-            list_time.append(now_time)
-
-
-    date_format = datetime.datetime.strptime(now_time, '%H:%M')
-    while int(date_format.time().strftime(format='%H:%M')[:2]) != 2:
-        date_format += datetime.timedelta(minutes=30)
-        list_time.append(date_format.time().strftime(format='%H:%M'))
-    return list_time
-
-time_list()
 
 def visit_time_button(name_time) -> InlineKeyboardMarkup:
-    """Спсок кнопок для выбора время бронирования"""
+    """Спсок кнопок для выбора времени бронирования"""
     markup = InlineKeyboardMarkup()
     new_list = [InlineKeyboardButton(text=time,callback_data=f'{time}_{name_time}') for time in time_list()]
     markup.add(*new_list, row_width=4)
@@ -82,13 +39,14 @@ def choosing_place_button() -> InlineKeyboardMarkup:
     but_3 = InlineKeyboardButton(text='Стандарт №4', callback_data='pk_st_4')
     but_4 = InlineKeyboardButton(text='Стандарт №5', callback_data='pk_st_5')
     but_5 = InlineKeyboardButton(text='VIP №1', callback_data='pk_vip_1')
-    but_6 = InlineKeyboardButton(text='ViP №2', callback_data='pk_vip_2')
+    but_6 = InlineKeyboardButton(text='VIP №2', callback_data='pk_vip_2')
     but_7 = InlineKeyboardButton(text='PS 5', callback_data='pk_ps')
     markup.add(but_0, but_1, but_2, but_3, but_4, row_width=3)
     markup.add( but_5, but_6, but_7, row_width=2)
     return markup
 
 def request_contact_button():
+    """Кнопка с отправкой номера телефона"""
     markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     but_1 = KeyboardButton(text="Отправить номер телефона", request_contact=True)
     markup.add(but_1)

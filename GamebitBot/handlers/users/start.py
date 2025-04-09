@@ -1,5 +1,5 @@
 import os
-from GamebitBot.loader import bot
+from loader import bot
 from telebot.types import Message, CallbackQuery, ReplyKeyboardRemove
 from keyboards.inline_button import menu_button, button_location, visit_time_button, \
     request_contact_button, choosing_place_button

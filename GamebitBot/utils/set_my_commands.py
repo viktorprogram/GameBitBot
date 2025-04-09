@@ -1,6 +1,5 @@
 from telebot.types import Message, BotCommand
-from GamebitBot.data.config import DEFAULT_COMMANDS
-
+from data.config import DEFAULT_COMMANDS
 
 def set_default_commands(bot):
     """Установка команд из списка в config"""

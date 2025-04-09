@@ -38,7 +38,7 @@ def info_gamebit(message: Message):
         close_photo(open_photo_path)
 
     elif text == '📫Локация':
-        photo_location = open((f'{os.getcwd()}\\photo\\location\\location.jpg'), 'rb')
+        photo_location = open((f'/app/GameBitBot/GamebitBot/photo/location/location.jpg'), 'rb')
         bot.send_photo(chat_id=message.chat.id,
                        reply_markup=button_location(),
                        photo=photo_location,
@@ -47,12 +47,9 @@ def info_gamebit(message: Message):
         photo_location.close()
 
     elif text == '💰Прайс':
-        try:
-            open_photo_path, photo = open_photo_to_message(name='price')
-            bot.send_media_group(chat_id=message.chat.id, media=photo)
-            close_photo(open_photo_path)
-        except FileNotFoundError:
-            bot.send_message(chat_id=message.chat.id, text=f'{os.listdir('/app/GameBitBot')}')
+        open_photo_path, photo = open_photo_to_message(name='price')
+        bot.send_media_group(chat_id=message.chat.id, media=photo)
+        close_photo(open_photo_path)
 
     elif text == '🚨Правила клуба':
         open_photo_path, photo = open_photo_to_message(name='rule')

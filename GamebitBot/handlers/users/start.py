@@ -52,7 +52,7 @@ def info_gamebit(message: Message):
             bot.send_media_group(chat_id=message.chat.id, media=photo)
             close_photo(open_photo_path)
         except FileNotFoundError:
-            bot.send_message(chat_id=message.chat.id, text=f'{os.listdir(os.getcwd())}')
+            bot.send_message(chat_id=message.chat.id, text=f'{os.listdir('/app/GameBitBot')}')
 
     elif text == '🚨Правила клуба':
         open_photo_path, photo = open_photo_to_message(name='rule')

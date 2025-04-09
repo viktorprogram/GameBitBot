@@ -47,9 +47,12 @@ def info_gamebit(message: Message):
         photo_location.close()
 
     elif text == '💰Прайс':
-        open_photo_path, photo = open_photo_to_message(name='price')
-        bot.send_media_group(chat_id=message.chat.id, media=photo)
-        close_photo(open_photo_path)
+        try:
+            open_photo_path, photo = open_photo_to_message(name='price')
+            bot.send_media_group(chat_id=message.chat.id, media=photo)
+            close_photo(open_photo_path)
+        except FileNotFoundError:
+            bot.send_message(chat_id=message.chat.id, text=f'{os.getcwd()}')
 
     elif text == '🚨Правила клуба':
         open_photo_path, photo = open_photo_to_message(name='rule')

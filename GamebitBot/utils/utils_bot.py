@@ -18,8 +18,8 @@ def info_pk_user(choosing_place: str) -> str:
 
 def open_photo_to_message(name: str):
     """Функция чтения изображения для отправки"""
-    open_photo = [open((f'\\app\\GameBitBot\\GamebitBot\\photo\\{name}\\{path}'), 'rb') for path in
-                          os.listdir(f'\\app\\GameBitBot\\GamebitBot\\photo\\{name}')]
+    open_photo = [open((f'Artifacts\\GameBitBot\\GamebitBot\\photo\\{name}\\{path}'), 'rb') for path in
+                          os.listdir(f'Artifacts\\GameBitBot\\GamebitBot\\photo\\\\{name}')]
     media_photo = [InputMediaPhoto(i) for i in open_photo]
     return open_photo, media_photo
 

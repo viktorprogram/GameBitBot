@@ -114,12 +114,12 @@ def phone(message: Message):
         pass
     bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     bot.send_message(chat_id='259061505', text=f'Пользователь - {name} \n'
-                                               f'Забронировал на время - {visit_time} - {end_time} \n'
+                                               f'Забронировал на время с {visit_time} до {end_time} \n'
                                                f'Компьютер - {full_choosing_place} \n'
                                                f'номер телефона - {message.contact.phone_number}')
     bot.send_message(chat_id=message.chat.id, text=f'{name}, спасибо что забронировали  \n'
                                                         f'Компьютер - {full_choosing_place} \n'
-                                                        f'на время - {visit_time} - {end_time} \n'
+                                                        f'на время с {visit_time} до {end_time} \n'
                                                         f'<b>Если вы не успели ко времени бронирования, бронь продержится 15 минут, '
                                                         f'после чего компьютер будет свободен</b>', parse_mode='html',
                           reply_markup=ReplyKeyboardRemove())

@@ -11,6 +11,7 @@ from utils.utils_bot import info_pk_user, open_photo_to_message, close_photo
 def command_start(message: Message):
     """Обработка команды старт с выводом блока кнопок с общей информацией"""
     bot.set_state(message.from_user.id, UserStateInfo.start, message.chat.id)
+    print(message.chat.id)
     bot.send_message(chat_id=message.chat.id,
                      text=f"<b>{message.from_user.full_name}</b> Добро пожаловать в <b>GameBitBot</b>",
                      parse_mode='html',
@@ -113,7 +114,8 @@ def phone(message: Message):
     except AttributeError:
         pass
     bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-    bot.send_message(chat_id='259061505', text=f'Пользователь - {name} \n'
+    #259061505
+    bot.send_message(chat_id='1397665721', text=f'Пользователь - {name} \n'
                                                f'Забронировал на время с {visit_time} до {end_time} \n'
                                                f'Компьютер - {full_choosing_place} \n'
                                                f'номер телефона - {message.contact.phone_number}')

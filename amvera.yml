@@ -1,0 +1,11 @@
+meta:
+  environment: python
+  toolchain:
+    name: pip
+    version: 3.13
+build:
+  requirementsPath: GamebitBot\requirements.txt
+run:
+  scriptName: GamebitBot\main.py
+  persistenceMount: /data
+  containerPort: 80

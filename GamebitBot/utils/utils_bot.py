@@ -30,7 +30,9 @@ def close_photo(list_open_photo: list):
 
 def time_list() -> List[str]:
     """Функция создает список со временем для создания кнопок"""
-    time_now = str(datetime.datetime.now().time().strftime(format='%H:%M'))
+    time_now_3 = datetime.datetime.now() + datetime.timedelta(hours=3)
+    #time_now = str(datetime.datetime.now().time().strftime(format='%H:%M'))
+    time_now = time_now_3.time().strftime(format='%H:%M')
     list_time = []
 
     if 2 < int(time_now[:2]) < 12:
@@ -57,4 +59,4 @@ def time_list() -> List[str]:
         list_time.append(date_format.time().strftime(format='%H:%M'))
     return list_time
 
-
+time_list()

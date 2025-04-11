@@ -115,7 +115,8 @@ def phone(message: Message):
         pass
     bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     #259061505
-    bot.send_message(chat_id='1397665721', text=f'Пользователь - {name} \n'
+    #1397665721
+    bot.send_message(chat_id='259061505', text=f'Пользователь - {name} \n'
                                                f'Забронировал на время с {visit_time} до {end_time} \n'
                                                f'Компьютер - {full_choosing_place} \n'
                                                f'номер телефона - {message.contact.phone_number}')
